@@ -2080,7 +2080,7 @@ sub oldProcessReadRegions {
     my $centersReadsCount = 0; #number of centers on mirBase hairpins with reads
     my $noCenterCount = 0;  #number of hairpins without centers (hopefully this will stay 0)
     my $mu = Memory::Usage->new() if ($testMemory);
-    my #$tk = TimeKeeper->new() if ($testTime);
+    #my $tk = TimeKeeper->new() if ($testTime);
     my @sampleList;
     my $minLength = $parameters->{lengthMin} or die "minLength: not loaded.\n";
     my $filteredCandidatesFile = $parameters->{filteredCandidatesFile};
