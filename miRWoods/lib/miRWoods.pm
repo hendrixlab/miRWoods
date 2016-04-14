@@ -2,7 +2,7 @@ package miRWoods;
 use Bio::DB::Sam;
 use Memory::Usage;
 use Statistics::R;
-use TimeKeeper;
+#use TimeKeeper;
 use RNA;
 use strict;
 use warnings;
@@ -1757,7 +1757,7 @@ sub processReadRegions {
     my $centersReadsCount = 0; #number of centers on mirBase hairpins with reads
     my $noCenterCount = 0;  #number of hairpins without centers (hopefully this will stay 0)
     my $mu = Memory::Usage->new() if ($testMemory);
-    my $tk = TimeKeeper->new() if ($testTime);
+    #my $tk = TimeKeeper->new() if ($testTime);
     my @sampleList;
     my $minLength = $parameters->{lengthMin} or die "minLength: not loaded.\n";
     my $filteredCandidatesFile = $parameters->{filteredCandidatesFile};
@@ -1792,7 +1792,7 @@ sub processReadRegions {
     print HDR "\n";
     print HPL "\n";
     
-    $tk->start("TotalTime") if ($testTime);
+    #$tk->start("TotalTime") if ($testTime);
     
     open(RRF, $readRegionsFile) or die "failed to open $readRegionsFile\n";
     my $prevChrom;
@@ -1818,31 +1818,31 @@ sub processReadRegions {
 	    #print "extended location = $location\n";
 	    ($chrom,$start,$stop,$strand) = parseLocation($location);
 	    my $sequence = getSequence($location,$genome);
-    	    $tk->start("retrieveReadData") if ($testTime);
+    	    #$tk->start("retrieveReadData") if ($testTime);
 	    my($distinctReads,$uniqueReadCount,$totalDistinctReads,$adjustedReadCount) = retrieveReadData($location,$bamList,$parameters);
-	    $tk->end("retrieveReadData") if ($testTime);
+	    #$tk->end("retrieveReadData") if ($testTime);
 	    if ($distinctReads->{$strand}) {  #neccessary if testing read reagions with known mirs and no real read exists in that read region
 		if ($adjustedReadCount->{$strand} < $parameters->{countMinLocus}) {
 		    $readsLessThanCountMinLocus++;
 		    print "$id has fewer reads than count min locus\n" if ($testReadCounts);
 		}
 		$readsCount++;
-		$tk->start("buildProducts") if ($testTime);
+		#$tk->start("buildProducts") if ($testTime);
 		my($senseProducts) = buildProducts($location,$distinctReads->{$strand},$strand,$parameters);
 		my($averageProductVariance,$weightedAverageProductVariance) = getReadDataProductVariance($senseProducts,$parameters);
 		my($averageReadVariance,$weightedAverageReadVariance) = getReadLocationVariance($senseProducts,$parameters);
 		#print "$averageProductVariance\t$weightedAverageProductVariance\n";
-		$tk->end("buildProducts") if ($testTime);
-		$tk->start("getFold") if ($testTime);
+		#$tk->end("buildProducts") if ($testTime);
+		#$tk->start("getFold") if ($testTime);
 		#here productDuplexCoords is the relative coordinates of the product after duplexing.  seqDuplexCoords is the actual produts duplex.
 		my($fold,$mfe,$maxProductCoords,$productDuplexCoords,
 		   $seqDuplexCoords,$dupStructure,$duplexEnergy) = getFold($chrom,$sequence,$senseProducts,$id);
 		my($foldDuplexCmp,$exactFoldDuplexCmp) = compareFoldAndDuplexStructs($fold,$maxProductCoords,$productDuplexCoords,$seqDuplexCoords,$dupStructure,$id);
 		my($prodDupPBP,$mpDuplexLoopLength) = getProductDuplexPBP($fold,$maxProductCoords);
-		$tk->end("getFold") if ($testTime);
-		$tk->start("getMergedHairpinCenters") if ($testTime);
+		#$tk->end("getFold") if ($testTime);
+		#$tk->start("getMergedHairpinCenters") if ($testTime);
 		my @centers = getMergedHairpinCenters($fold,$parameters);
-		$tk->end("getMergedHairpinCenters") if ($testTime);
+		#$tk->end("getMergedHairpinCenters") if ($testTime);
 		$centersReadsCount += scalar(@centers);
 		unless (scalar(@centers)) {
 		    $noCenterCount++;
@@ -1855,41 +1855,41 @@ sub processReadRegions {
 		    my $label = chr($asciiVal);
 		    my $newId = $id . $label;
 		    $COUNT++;
-		    $tk->start("getBasePairs") if ($testTime);
+		    #$tk->start("getBasePairs") if ($testTime);
 		    my $basePairs = getBasePairs($center,$fold);
-		    $tk->end("getBasePairs") if ($testTime);
-		    $tk->start("getMaxHairpinLength") if ($testTime);
+		    #$tk->end("getBasePairs") if ($testTime);
+		    #$tk->start("getMaxHairpinLength") if ($testTime);
 		    my $hairpinLength = getMaxHairpinLength($fold,$center);
-		    $tk->end("getMaxHairpinLength") if ($testTime);
-		    $tk->start("getFullHairpinWindow") if ($testTime);
+		    #$tk->end("getMaxHairpinLength") if ($testTime);
+		    #$tk->start("getFullHairpinWindow") if ($testTime);
 		    my($hStart,$hStop) = getFullHairpinWindow($fold,$center);
-		    $tk->end("getFullHairpinWindow") if ($testTime);
+		    #$tk->end("getFullHairpinWindow") if ($testTime);
 		    if($hairpinLength >= $minLength) {
-			$tk->start("getProductInfo") if ($testTime);
+			#$tk->start("getProductInfo") if ($testTime);
 			my $senseProducts=getProductInfo($center,$fold,$basePairs,$location,$senseProducts,$parameters);
-			$tk->end("getProductInfo") if ($testTime);
-			$tk->start("rebuildProducts") if ($testTime);
+			#$tk->end("getProductInfo") if ($testTime);
+			#$tk->start("rebuildProducts") if ($testTime);
 			$senseProducts=rebuildProducts($center,$fold,$basePairs,$senseProducts,$parameters);
-			$tk->end("rebuildProducts") if ($testTime);
+			#$tk->end("rebuildProducts") if ($testTime);
 			$senseProducts=addProductSize($senseProducts,$parameters);
 #			if(goodProducts($senseProducts,$parameters)) {
 			my $revStrand = revStrand($strand);
-			$tk->start("buildProducts") if ($testTime);
+			#$tk->start("buildProducts") if ($testTime);
 			my($antiSenseProducts) = buildProducts($location,$distinctReads->{$revStrand},$revStrand,$parameters);
-			$tk->end("buildProducts") if ($testTime);
-			$tk->start("getProductInfo") if ($testTime);
+			#$tk->end("buildProducts") if ($testTime);
+			#$tk->start("getProductInfo") if ($testTime);
 			$antiSenseProducts = getProductInfo($center,$fold,$basePairs,$location,$antiSenseProducts,$parameters);
-			$tk->end("getProductInfo") if ($testTime);
-			$tk->start("rebuildProducts") if ($testTime);
+			#$tk->end("getProductInfo") if ($testTime);
+			#$tk->start("rebuildProducts") if ($testTime);
 			$antiSenseProducts = rebuildProducts($center,$fold,$basePairs,$antiSenseProducts,$parameters);
-			$tk->end("rebuildProducts") if ($testTime);
+			#$tk->end("rebuildProducts") if ($testTime);
 			$antiSenseProducts=addProductSize($antiSenseProducts,$parameters);
-			$tk->start("getAdjTotalProductReads") if ($testTime);
+			#$tk->start("getAdjTotalProductReads") if ($testTime);
 			my $adjTotalProductReads = getAdjTotalProductReads($senseProducts);
-			$tk->end("getAdjTotalProductReads") if ($testTime);
-			$tk->start("getAdjTotalProductReads") if ($testTime);
+			#$tk->end("getAdjTotalProductReads") if ($testTime);
+			#$tk->start("getAdjTotalProductReads") if ($testTime);
 			my $adjTotalRevProductReads = getAdjTotalProductReads($antiSenseProducts);
-			$tk->end("getAdjTotalProductReads") if ($testTime);
+			#$tk->end("getAdjTotalProductReads") if ($testTime);
 			my($PASS,$REASON) = plausibleReads($adjTotalProductReads,$adjTotalRevProductReads,$senseProducts,$antiSenseProducts,
 							   $parameters);
 #			    if($PASS) {
@@ -1897,29 +1897,29 @@ sub processReadRegions {
 			#both mpLoopDiatance and dupLoopDistance can be negative if overlapping the loop
 			my($mpLoopDistance,$dupLoopDistance,$loopSize) = getMaxProductLoopDistance($center,$maxProduct,$mpDuplex);
 			my($mpOverlapScore,$dupOverlapScore,$wghtMPOverlapIntensity,$wghtDupOverlapIntensity) = getMaxProductOverlapScores($senseProducts,$maxProduct,$mpDuplex);
-			$tk->start("getReverseProductDisplacement") if ($testTime);
+			#$tk->start("getReverseProductDisplacement") if ($testTime);
 			my($tpd,$totalRP)=newGetReverseProductDisplacement($senseProducts,
 									   $antiSenseProducts,
 									   $adjTotalProductReads,
 									   $parameters,$newId);
-			$tk->end("getReverseProductDisplacement") if ($testTime);
+			#$tk->end("getReverseProductDisplacement") if ($testTime);
 			my $apd = $totalRP ? $tpd/$totalRP : 0.0;
 			my $urf = $adjustedReadCount->{$strand} ? $uniqueReadCount->{$strand} / $adjustedReadCount->{$strand} : 0;
-			$tk->start("computeMaxProdHitCount") if ($testTime);
+			#$tk->start("computeMaxProdHitCount") if ($testTime);
 			my $ahc = computeMaxProdHitCount($senseProducts,$location,$distinctReads,$parameters);
-			$tk->end("computeMaxProdHitCount") if ($testTime);
-			$tk->start("computeMaxProdFivePrimeHet") if ($testTime);
+			#$tk->end("computeMaxProdHitCount") if ($testTime);
+			#$tk->start("computeMaxProdFivePrimeHet") if ($testTime);
 			my $afh = computeMaxProdFivePrimeHet($senseProducts,$parameters);
-			$tk->end("computeMaxProdFivePrimeHet") if ($testTime);
-			$tk->start("computeProductBasePairing") if ($testTime);
+			#$tk->end("computeMaxProdFivePrimeHet") if ($testTime);
+			#$tk->start("computeProductBasePairing") if ($testTime);
 			my $pbp = computeProductBasePairing($center,$senseProducts,$basePairs,$parameters);
-			$tk->end("computeProductBasePairing") if ($testTime);
-			$tk->start("computeMaxSameShift") if ($testTime);
+			#$tk->end("computeProductBasePairing") if ($testTime);
+			#$tk->start("computeMaxSameShift") if ($testTime);
 			my $sameShift = computeMaxSameShift($location,$distinctReads->{$strand},$senseProducts,$parameters);
-			$tk->end("computeMaxSameShift") if ($testTime);
-			$tk->start("computeMaxBothShift") if ($testTime);
+			#$tk->end("computeMaxSameShift") if ($testTime);
+			#$tk->start("computeMaxBothShift") if ($testTime);
 			my $bothShift = computeMaxBothShift($basePairs,$location,$distinctReads->{$strand},$senseProducts,$parameters,$newId);
-			$tk->end("computeMaxBothShift") if ($testTime);
+			#$tk->end("computeMaxBothShift") if ($testTime);
 #			my($zScore,$consensusMFE) = getRNAzData($sequence);
 			my $innerLoopGapCount = getInnerLoopGapCount($center,$fold);
 			my $splitProductAbundance = computeSplitProductAbundance($senseProducts,$parameters);
@@ -1939,9 +1939,9 @@ sub processReadRegions {
 			    my $length = $relStop - $relStart + 1;
 			    my $productSequence = substr($sequence,$relStart,$length);
 			    $totalSense += $adjProdCount;
-			    $tk->start("getAdjTotalLibraryCounts") if ($testTime);
+			    #$tk->start("getAdjTotalLibraryCounts") if ($testTime);
 			    my $adjTotalLibraryCounts = getAdjTotalLibraryCounts($prodList);
-			    $tk->end("getAdjTotalLibraryCounts") if ($testTime);
+			    #$tk->end("getAdjTotalLibraryCounts") if ($testTime);
 			    print HPL "$newId\t$side\t$newType\t$adjProdCount\t";
 			    print HPL "$adjMaxProdCount\t$relStart\t$relStop\t$productStrand\t";
 			    print HPL "$productSequence";
@@ -1974,9 +1974,9 @@ sub processReadRegions {
 			    $totalAntisense += $adjProdCount;
 			    my $length = $relStop - $relStart + 1;
 			    my $productSequence = reverseComplement(substr($sequence,$relStart,$length));
-			    $tk->start("getAdjTotalLibraryCounts") if ($testTime);
+			    #$tk->start("getAdjTotalLibraryCounts") if ($testTime);
 			    my $adjTotalLibraryCounts = getAdjTotalLibraryCounts($prodList);
-			    $tk->end("getAdjTotalLibraryCounts") if ($testTime);
+			    #$tk->end("getAdjTotalLibraryCounts") if ($testTime);
 			    print HPL "$newId\t$side\t$newType\t$adjProdCount\t";
 			    print HPL "$adjMaxProdCount\t$relStart\t$relStop\t$productStrand\t";
 			    print HPL "$productSequence";
@@ -2051,8 +2051,8 @@ sub processReadRegions {
 	}
     }
     $mu->record("after finishing") if ($testMemory);
-    $tk->end("TotalTime") if ($testTime);
-    $tk->dumpTimes() if ($testTime);
+    #$tk->end("TotalTime") if ($testTime);
+    #$tk->dumpTimes() if ($testTime);
 
     print "hairpins with reads = $readsCount\n" if ($testReadCounts);
     print "hairpins without reads = $noReadsCount\n" if ($testReadCounts);
@@ -2080,7 +2080,7 @@ sub oldProcessReadRegions {
     my $centersReadsCount = 0; #number of centers on mirBase hairpins with reads
     my $noCenterCount = 0;  #number of hairpins without centers (hopefully this will stay 0)
     my $mu = Memory::Usage->new() if ($testMemory);
-    my $tk = TimeKeeper->new() if ($testTime);
+    my #$tk = TimeKeeper->new() if ($testTime);
     my @sampleList;
     my $minLength = $parameters->{lengthMin} or die "minLength: not loaded.\n";
     my $filteredCandidatesFile = $parameters->{filteredCandidatesFile};
@@ -2110,7 +2110,7 @@ sub oldProcessReadRegions {
     print HDR "\n";
     print HPL "\n";
 
-    $tk->start("TotalTime") if ($testTime);
+    #$tk->start("TotalTime") if ($testTime);
 
     open(RRF, $readRegionsFile) or die "failed to open $readRegionsFile\n";
     my $prevChrom;
@@ -2131,26 +2131,26 @@ sub oldProcessReadRegions {
 	    my $location = extendSequenceToFillBuffer($chrom,$start,$stop,$strand,$chromLengths->{$chrom},$parameters);
 	    ($chrom,$start,$stop,$strand) = parseLocation($location);
 	    my $sequence = getSequence($location,$genome);
-    	    $tk->start("retrieveReadData") if ($testTime);
+    	    #$tk->start("retrieveReadData") if ($testTime);
 	    my($distinctReads,$uniqueReadCount,$totalDistinctReads,$adjustedReadCount) = retrieveReadData($location,$bamList,$parameters);
-	    $tk->end("retrieveReadData") if ($testTime);
+	    #$tk->end("retrieveReadData") if ($testTime);
 	    if ($distinctReads->{$strand}) {  #neccessary if testing read reagions with known mirs and no real read exists in that read region
 		if ($adjustedReadCount->{$strand} < $parameters->{countMinLocus}) {
 		    $readsLessThanCountMinLocus++;
 		    print "$id has fewer reads than count min locus\n" if ($testReadCounts);
 		}
 		$readsCount++;
-		$tk->start("buildProducts") if ($testTime);
+		#$tk->start("buildProducts") if ($testTime);
 		my($senseProducts) = buildProducts($location,$distinctReads->{$strand},$strand,$parameters);
-		$tk->end("buildProducts") if ($testTime);
-		$tk->start("getFold") if ($testTime);
+		#$tk->end("buildProducts") if ($testTime);
+		#$tk->start("getFold") if ($testTime);
 		my($fold,$mfe,$maxProductCoords,$productDuplexCoords,
 		   $seqDuplexCoords,$dupStructure,$duplexEnergy) = getFold($chrom,$sequence,$senseProducts,$id);
 		my $foldDuplexComparison = compareFoldAndDuplexStructs($fold,$maxProductCoords,$productDuplexCoords,$seqDuplexCoords,$dupStructure);
-		$tk->end("getFold") if ($testTime);
-		$tk->start("getMergedHairpinCenters") if ($testTime);
+		#$tk->end("getFold") if ($testTime);
+		#$tk->start("getMergedHairpinCenters") if ($testTime);
 		my @centers = getMergedHairpinCenters($fold,$parameters);
-		$tk->end("getMergedHairpinCenters") if ($testTime);
+		#$tk->end("getMergedHairpinCenters") if ($testTime);
 		$centersReadsCount += scalar(@centers);
 		unless (scalar(@centers)) {
 		    $noCenterCount++;
@@ -2163,67 +2163,67 @@ sub oldProcessReadRegions {
 		    my $label = chr($asciiVal);
 		    my $newId = $id . $label;
 		    $COUNT++;
-		    $tk->start("getBasePairs") if ($testTime);
+		    #$tk->start("getBasePairs") if ($testTime);
 		    my $basePairs = getBasePairs($center,$fold);
-		    $tk->end("getBasePairs") if ($testTime);
-		    $tk->start("getMaxHairpinLength") if ($testTime);
+		    #$tk->end("getBasePairs") if ($testTime);
+		    #$tk->start("getMaxHairpinLength") if ($testTime);
 		    my $hairpinLength = getMaxHairpinLength($fold,$center);
-		    $tk->end("getMaxHairpinLength") if ($testTime);
-		    $tk->start("getFullHairpinWindow") if ($testTime);
+		    #$tk->end("getMaxHairpinLength") if ($testTime);
+		    #$tk->start("getFullHairpinWindow") if ($testTime);
 		    my($hStart,$hStop) = getFullHairpinWindow($fold,$center);
-		    $tk->end("getFullHairpinWindow") if ($testTime);
+		    #$tk->end("getFullHairpinWindow") if ($testTime);
 		    if($hairpinLength >= $minLength) {
-			$tk->start("getProductInfo") if ($testTime);
+			#$tk->start("getProductInfo") if ($testTime);
 			my $senseProducts=getProductInfo($center,$fold,$basePairs,$location,$senseProducts,$parameters);
-			$tk->end("getProductInfo") if ($testTime);
-			$tk->start("rebuildProducts") if ($testTime);
+			#$tk->end("getProductInfo") if ($testTime);
+			#$tk->start("rebuildProducts") if ($testTime);
 			$senseProducts=rebuildProducts($center,$fold,$basePairs,$senseProducts,$parameters);
-			$tk->end("rebuildProducts") if ($testTime);
+			#$tk->end("rebuildProducts") if ($testTime);
 			$senseProducts=addProductSize($senseProducts,$parameters);
 			if(goodProducts($senseProducts,$parameters)) {
 			    my $revStrand = revStrand($strand);
-			    $tk->start("buildProducts") if ($testTime);
+			    #$tk->start("buildProducts") if ($testTime);
 			    my($antiSenseProducts) = buildProducts($location,$distinctReads->{$revStrand},$revStrand,$parameters);
-			    $tk->end("buildProducts") if ($testTime);
-			    $tk->start("getProductInfo") if ($testTime);
+			    #$tk->end("buildProducts") if ($testTime);
+			    #$tk->start("getProductInfo") if ($testTime);
 			    $antiSenseProducts = getProductInfo($center,$fold,$basePairs,$location,$antiSenseProducts,$parameters);
-			    $tk->end("getProductInfo") if ($testTime);
-			    $tk->start("rebuildProducts") if ($testTime);
+			    #$tk->end("getProductInfo") if ($testTime);
+			    #$tk->start("rebuildProducts") if ($testTime);
 			    $antiSenseProducts = rebuildProducts($center,$fold,$basePairs,$antiSenseProducts,$parameters);
-			    $tk->end("rebuildProducts") if ($testTime);
+			    #$tk->end("rebuildProducts") if ($testTime);
 			    $antiSenseProducts=addProductSize($antiSenseProducts,$parameters);
-			    $tk->start("getAdjTotalProductReads") if ($testTime);
+			    #$tk->start("getAdjTotalProductReads") if ($testTime);
 			    my $adjTotalProductReads = getAdjTotalProductReads($senseProducts);
-			    $tk->end("getAdjTotalProductReads") if ($testTime);
-			    $tk->start("getAdjTotalProductReads") if ($testTime);
+			    #$tk->end("getAdjTotalProductReads") if ($testTime);
+			    #$tk->start("getAdjTotalProductReads") if ($testTime);
 			    my $adjTotalRevProductReads = getAdjTotalProductReads($antiSenseProducts);
-			    $tk->end("getAdjTotalProductReads") if ($testTime);
+			    #$tk->end("getAdjTotalProductReads") if ($testTime);
 			    my($PASS,$REASON) = plausibleReads($adjTotalProductReads,$adjTotalRevProductReads,$senseProducts,$antiSenseProducts,
 							       $parameters);
 			    if($PASS) {
-				$tk->start("getReverseProductDisplacement") if ($testTime);
+				#$tk->start("getReverseProductDisplacement") if ($testTime);
 				my($tpd,$totalRP)=newGetReverseProductDisplacement($senseProducts,
 										$antiSenseProducts,
 										$adjTotalProductReads,
 										$parameters,$newId);
-				$tk->end("getReverseProductDisplacement") if ($testTime);
+				#$tk->end("getReverseProductDisplacement") if ($testTime);
 				my $apd = $totalRP ? $tpd/$totalRP : 0.0;
 				my $urf = $adjustedReadCount->{$strand} ? $uniqueReadCount->{$strand} / $adjustedReadCount->{$strand} : 0;
-				$tk->start("computeMaxProdHitCount") if ($testTime);
+				#$tk->start("computeMaxProdHitCount") if ($testTime);
 				my $ahc = computeMaxProdHitCount($senseProducts,$location,$distinctReads,$parameters);
-				$tk->end("computeMaxProdHitCount") if ($testTime);
-				$tk->start("computeMaxProdFivePrimeHet") if ($testTime);
+				#$tk->end("computeMaxProdHitCount") if ($testTime);
+				#$tk->start("computeMaxProdFivePrimeHet") if ($testTime);
 				my $afh = computeMaxProdFivePrimeHet($senseProducts,$parameters);
-				$tk->end("computeMaxProdFivePrimeHet") if ($testTime);
-				$tk->start("computeProductBasePairing") if ($testTime);
+				#$tk->end("computeMaxProdFivePrimeHet") if ($testTime);
+				#$tk->start("computeProductBasePairing") if ($testTime);
 				my $pbp = computeProductBasePairing($center,$senseProducts,$basePairs,$parameters);
-				$tk->end("computeProductBasePairing") if ($testTime);
-				$tk->start("computeMaxSameShift") if ($testTime);
+				#$tk->end("computeProductBasePairing") if ($testTime);
+				#$tk->start("computeMaxSameShift") if ($testTime);
 				my $sameShift = computeMaxSameShift($location,$distinctReads->{$strand},$senseProducts,$parameters);
-				$tk->end("computeMaxSameShift") if ($testTime);
-				$tk->start("computeMaxBothShift") if ($testTime);
+				#$tk->end("computeMaxSameShift") if ($testTime);
+				#$tk->start("computeMaxBothShift") if ($testTime);
 				my $bothShift = computeMaxBothShift($basePairs,$location,$distinctReads->{$strand},$senseProducts,$parameters,$newId);
-				$tk->end("computeMaxBothShift") if ($testTime);
+				#$tk->end("computeMaxBothShift") if ($testTime);
 				my($zScore,$consensusMFE) = getRNAzData($sequence);
 				my $splitProductAbundance = computeSplitProductAbundance($senseProducts,$parameters);
 				my $overlapProductAbundance = computeOverlapProductAbundance($senseProducts,$parameters);
@@ -2238,9 +2238,9 @@ sub oldProcessReadRegions {
 				    my $length = $relStop - $relStart + 1;
 				    my $productSequence = substr($sequence,$relStart,$length);
 				    $totalSense += $adjProdCount;
-				    $tk->start("getAdjTotalLibraryCounts") if ($testTime);
+				    #$tk->start("getAdjTotalLibraryCounts") if ($testTime);
 				    my $adjTotalLibraryCounts = getAdjTotalLibraryCounts($prodList);
-				    $tk->end("getAdjTotalLibraryCounts") if ($testTime);
+				    #$tk->end("getAdjTotalLibraryCounts") if ($testTime);
 				    print HPL "$newId\t$side\t$newType\t$adjProdCount\t";
 				    print HPL "$adjMaxProdCount\t$relStart\t$relStop\t$productStrand\t";
 				    print HPL "$productSequence";
@@ -2273,9 +2273,9 @@ sub oldProcessReadRegions {
 				    $totalAntisense += $adjProdCount;
 				    my $length = $relStop - $relStart + 1;
 				    my $productSequence = reverseComplement(substr($sequence,$relStart,$length));
-				    $tk->start("getAdjTotalLibraryCounts") if ($testTime);
+				    #$tk->start("getAdjTotalLibraryCounts") if ($testTime);
 				    my $adjTotalLibraryCounts = getAdjTotalLibraryCounts($prodList);
-				    $tk->end("getAdjTotalLibraryCounts") if ($testTime);
+				    #$tk->end("getAdjTotalLibraryCounts") if ($testTime);
 				    print HPL "$newId\t$side\t$newType\t$adjProdCount\t";
 				    print HPL "$adjMaxProdCount\t$relStart\t$relStop\t$productStrand\t";
 				    print HPL "$productSequence";
@@ -2334,8 +2334,8 @@ sub oldProcessReadRegions {
 	}
     }
     $mu->record("after finishing") if ($testMemory);
-    $tk->end("TotalTime") if ($testTime);
-    $tk->dumpTimes() if ($testTime);
+    #$tk->end("TotalTime") if ($testTime);
+    #$tk->dumpTimes() if ($testTime);
 
     print "hairpins with reads = $readsCount\n" if ($testReadCounts);
     print "hairpins without reads = $noReadsCount\n" if ($testReadCounts);
@@ -3857,17 +3857,17 @@ sub oldGetReverseProductDisplacement {
 
 sub plausibleReads {
     my($adjTotalProductReads,$adjTotalRevProductReads,$productInfo,$revProductInfo,$parameters) = @_;
-    #    $tk->start("plausibleReads");
+    #    #$tk->start("plausibleReads");
     if(doubleStrandedProducts($adjTotalProductReads, $adjTotalRevProductReads, $parameters)) {
 	if(overlappingProducts($productInfo,$revProductInfo,$parameters)) {
-	    #	    $tk->end("plausibleReads");
+	    #	    #$tk->end("plausibleReads");
 	    return (1,"");
 	} else {
- #    $tk->end("plausibleReads");
+ #    #$tk->end("plausibleReads");
 	    return (0,"rejected: has abundant reads on each strand, but none overlap.");
 	}
     } else {
-	#$tk->end("plausibleReads");
+	##$tk->end("plausibleReads");
 	return (1,"");
     }
 }
@@ -3911,13 +3911,13 @@ sub oldComputeProductBasePairing {
 
 sub goodProducts {
     my($productInfo,$parameters) = @_;
-    #    $tk->start("goodProducts");
+    #    #$tk->start("goodProducts");
     my $maxFivePrimeHet = $parameters->{fivePrimeHetMax} or die "FAIL: no maxFivePrimeHet loaded.\n";
     my $minLocusCount = $parameters->{countMinLocus} or die "FAIL: no minLocusCount loaded.\n";
     my $adjReadCount = getAdjTotalProductReads($productInfo);
     #print "readCount = $readCount\n";
     if($adjReadCount < $minLocusCount) {
-	#	$tk->end("goodProducts");
+	#	#$tk->end("goodProducts");
 	return 0;
     }
      foreach my $product (@{$productInfo}) {
@@ -5509,24 +5509,26 @@ sub extractGffReadRegions {
 #}
 
 sub overlapsPrediction {
-    my($hpScoreInfo,$usedScores,$overlapCutoff) = @_;
+    my($hpScoreInfo,$usedScores,$overlapCutoff,$hairpinFoldRegions) = @_;
     my $greatestOverlapAmt = 0;
     my $greatestOverlappingHP = 0;
-    my($start1,$stop1) = @{$hpScoreInfo};
+    my($start1,$stop1,$hpScoreInfo1,$geneId1,$name1) = @{$hpScoreInfo};
+    my($foldStart1,$foldStop1) = @{$hairpinFoldRegions->{$name1}};
     foreach my $scoreInfo (@{$usedScores}) {
-	my($start2,$stop2,$hpScoreInfo,$geneId,$name) = @{$scoreInfo};
-	my $overlapAmt = getOverlap($start1,$stop1,$start2,$stop2);
+	my($start2,$stop2,$hpScoreInfo2,$geneId2,$name2) = @{$scoreInfo};
+	my($foldStart2,$foldStop2) = @{$hairpinFoldRegions->{$name2}};
+	my $overlapAmt = getOverlap($foldStart1,$foldStop1,$foldStart2,$foldStop2);
 	if ($overlapAmt > $overlapCutoff && $overlapAmt > $greatestOverlapAmt) {
 	    $greatestOverlapAmt = $overlapAmt;
-	    $greatestOverlappingHP = $name;
+	    $greatestOverlappingHP = $name2;
 	}
     }
     return $greatestOverlappingHP;
 }
 
 sub classifyPredictions {
-    my($predictions,$RFPredictions,$RFCutoff,$dropOverlaps) = @_;
-    my $overlapCutoff = 20;  #require at least 20 nucleotides to overlap before dropping
+    my($predictions,$RFPredictions,$RFCutoff,$dropOverlaps,$hairpinFoldRegions) = @_;
+    my $overlapCutoff = 1;  #require at least this many nucleotides to overlap before dropping
                              #this may be changed later to drop based on overlapping major products
     my %positivePredictions;
     my %negativePredictions;
@@ -5542,7 +5544,7 @@ sub classifyPredictions {
 	    my @sortedHPScores = sort {$b->[2] <=> $a->[2]} @{$hpScores{$strand}};
 	    foreach my $hpScoreInfo (@sortedHPScores) {
 		my($start,$stop,$hpScore,$geneId,$name) = @{$hpScoreInfo};
-		my $predictedOverlap = overlapsPrediction($hpScoreInfo,\@usedScores,$overlapCutoff);
+		my $predictedOverlap = overlapsPrediction($hpScoreInfo,\@usedScores,$overlapCutoff,$hairpinFoldRegions);
 		if ($dropOverlaps && $predictedOverlap) {
 		    push(@{$overlaps{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
 		    print "dropping $name because it overlaps $predictedOverlap\n";
@@ -5618,6 +5620,7 @@ sub printPredictedMirGff {
     #updating with annotated names if one exists
     my $annotatedMirNames;
     print "classes retrieved\n";
+    my $hairpinFoldRegions = getHairpinFoldRegions($parameters->{hairpinsFile});
     if ($gff) {
 	my($annotatedMirs) = readMirbaseGff3($gff);
 	print "adding antiSense to annotations\n";
@@ -5628,11 +5631,10 @@ sub printPredictedMirGff {
 
 	#getHairpinFoldRegions is a temorary fix needed to product the correct mirOverlaps.  See function for more info.
 	print "getting hairpin fold regions\n";
-	my $hairpinFoldRegions = getHairpinFoldRegions($parameters->{hairpinsFile});
 	$annotatedMirNames = renameMirOverlaps(\%predictions,$annotatedMirs,$productFile,$useLargestProduct,$minOverlapPercent,$hairpinFoldRegions);
     }
     #printing out gffs
-    my($posPredictions,$negPredictions,$overlaps) = classifyPredictions(\%predictions,\%RFPredictions,$RFCutoff,$dropOverlaps);
+    my($posPredictions,$negPredictions,$overlaps) = classifyPredictions(\%predictions,\%RFPredictions,$RFCutoff,$dropOverlaps,$hairpinFoldRegions);
     print "printing gff\'s\n";
     open(PGFF,">$posGff") or die "failed to open $posGff for writing\n";
     foreach my $chrom (%{$posPredictions}) {
