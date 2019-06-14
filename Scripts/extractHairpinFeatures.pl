@@ -53,7 +53,7 @@ my($posClass,$negClass) = (1,-1);
 my $hairpinList = readHairpinListFile($hairpinsFile);
 my $readRegions = readReadRegions($readRegionsFile);
 my $geneModels = ($geneModelsFile) ? readGeneModelFile($geneModelsFile) : 0;
-my $introns = ($geneModels) ? getIntronsFromGeneModels($geneModels) : 0;
+my $introns = ($geneModels) ? getIntronsFromGeneModels($geneModels) : {};
 my $neighborCounts = getNeighborCounts($hairpinList,$readRegions,$introns,$parameters);
 #printing vector file
 miRWoods::printHairpinVectorFile($hairpinsFile,$hairpinVectorFile,$genomeDir,$chromLengths,$negClass,$neighborCounts,$parameters);

@@ -5280,10 +5280,10 @@ sub lociContained {
     }
 }
 
-sub getOverlap_new {
+sub getOverlap {
     my($relStart1,$relStop1,$relStart2,$relStop2) = @_;
-    die "relStart1 > relStop1 ($relStart1 > $relStop1) in getOverlap_new()\n" if ($relStart1 > $relStop1);
-    die "relStart2 > relStop2 ($relStart2 > $relStop2) in getOverlap_new()\n" if ($relStart2 > $relStop2);
+    die "relStart1 > relStop1 ($relStart1 > $relStop1) in getOverlap()\n" if ($relStart1 > $relStop1);
+    die "relStart2 > relStop2 ($relStart2 > $relStop2) in getOverlap()\n" if ($relStart2 > $relStop2);
     if(($relStart1 <= $relStart2)&&($relStop2 <= $relStop1)) {
         #relstart2..relstop2 is within relstart1..relstop1
         return $relStop2 - $relStart2 + 1;
@@ -5306,22 +5306,22 @@ sub getOverlap_new {
     return 0;
 }
 
-#getOverlap with gradually be replaced with getOverlap_new during the next testing phase.
-sub getOverlap {
-    my($relStart1,$relStop1,$relStart2,$relStop2) = @_;    
-    if(($relStart1 <= $relStart2)&&($relStart2 <= $relStop1)) {
-	# relStart2 within first window
-	return $relStop1 - $relStart2 + 1;
-    } elsif(($relStart1 <= $relStop2)&&($relStop2 <= $relStop1)) {
-	# if relStop2 within first window
-	return $relStop2 - $relStart1 + 1;	
-    } elsif(($relStart2 <= $relStart1)&&($relStart1 <= $relStop2)) {
-	return $relStop2 - $relStart1 + 1;
-    } elsif(($relStart2 <= $relStop1)&&($relStop1<=$relStop2)) {
-	return $relStop2-$relStop1 + 1;
-    }
-    return 0;
-}
+#getOverlap will gradually be replaced with getOverlap during the next testing phase.
+#sub getOverlap {
+#    my($relStart1,$relStop1,$relStart2,$relStop2) = @_;    
+#    if(($relStart1 <= $relStart2)&&($relStart2 <= $relStop1)) {
+#	# relStart2 within first window
+#	return $relStop1 - $relStart2 + 1;
+#    } elsif(($relStart1 <= $relStop2)&&($relStop2 <= $relStop1)) {
+#	# if relStop2 within first window
+#	return $relStop2 - $relStart1 + 1;	
+#    } elsif(($relStart2 <= $relStart1)&&($relStart1 <= $relStop2)) {
+#	return $relStop2 - $relStart1 + 1;
+#    } elsif(($relStart2 <= $relStop1)&&($relStop1<=$relStop2)) {
+#	return $relStop2-$relStop1 + 1;
+#    }
+#    return 0;
+#}
 
 sub getShift {
     my($relStart1,$relStop1,$relStart2,$relStop2) = @_;    
@@ -6185,7 +6185,7 @@ sub annotateProducts {
        foreach my $annotProduct (@{$annotProducts->{$hairpinId}}) {
 	   my($chrom,$start,$stop,$strand,$id,$name) = @{$annotProduct};
 	   my($annotRelStart,$annotRelStop) = getRelStartStop($location,$start,$stop,$strand);
-	   my $overlap = getOverlap_new($relStart,$relStop,$annotRelStart,$annotRelStop);
+	   my $overlap = getOverlap($relStart,$relStop,$annotRelStart,$annotRelStop);
 	   if ($overlap) {
 	       if ($strand eq $productStrand) {
 		   my $offset = $annotRelStart - $relStart;
@@ -6230,7 +6230,7 @@ sub annotateHairpin {
     foreach my $hpInfo (@{$annotHairpins->{$foldChrom}}) {
 	my($start,$stop,$strand,$id,$name) = @{$hpInfo};
 	if ($strand eq $foldStrand) {
-	    my $overlap = getOverlap_new($foldStart,$foldStop,$start,$stop);
+	    my $overlap = getOverlap($foldStart,$foldStop,$start,$stop);
 	    if ($overlap > $maxOverlap) {
 		$maxOverlap = $overlap;
 		$hairpinCoverage = $overlap / ($foldStop - $foldStart + 1);
@@ -6248,7 +6248,7 @@ sub annotateHairpin {
 	foreach my $hpInfo (@{$annotHairpins->{$foldChrom}}) {
 	    my($start,$stop,$strand,$id,$name) = @{$hpInfo};
 	    if ($strand ne $foldStrand) {
-		my $overlap = getOverlap_new($foldStart,$foldStop,$start,$stop);
+		my $overlap = getOverlap($foldStart,$foldStop,$start,$stop);
 		if ($overlap > $maxOverlap) {
 		    $maxOverlap = $overlap;
 		    $hairpinCoverage = $overlap / ($foldStop - $foldStart + 1);
@@ -6269,7 +6269,7 @@ sub annotateHairpin {
 	    my($chrom,$start,$stop,$strand,$id,$name) = @{$annotProduct};
 #	    print "$name\t$chrom\t$start\t$stop\n";
 	    $numAnnotProducts += 1;
-	    my $overlap = getOverlap_new($foldStart,$foldStop,$start,$stop);
+	    my $overlap = getOverlap($foldStart,$foldStop,$start,$stop);
 	    if ($overlap) {
 		$annotProdsOverlapped += 1;
 	    }
@@ -6304,7 +6304,7 @@ sub annotateHairpin_old {
     foreach my $hpInfo (@{$annotHairpins->{$foldChrom}}) {
 	my($start,$stop,$strand,$id,$name) = @{$hpInfo};
 	if ($strand eq $foldStrand) {
-	    my $overlap = getOverlap_new($foldStart,$foldStop,$start,$stop);
+	    my $overlap = getOverlap($foldStart,$foldStop,$start,$stop);
 	    if ($overlap > $maxOverlap) {
 		$maxOverlap = $overlap;
 		$hairpinCoverage = $overlap / ($foldStop - $foldStart + 1);
@@ -6322,7 +6322,7 @@ sub annotateHairpin_old {
 	foreach my $hpInfo (@{$annotHairpins->{$foldChrom}}) {
 	    my($start,$stop,$strand,$id,$name) = @{$hpInfo};
 	    if ($strand ne $foldStrand) {
-		my $overlap = getOverlap_new($foldStart,$foldStop,$start,$stop);
+		my $overlap = getOverlap($foldStart,$foldStop,$start,$stop);
 		if ($overlap > $maxOverlap) {
 		    $maxOverlap = $overlap;
 		    $hairpinCoverage = $overlap / ($foldStop - $foldStart + 1);
@@ -6343,7 +6343,7 @@ sub annotateHairpin_old {
 	    my($chrom,$start,$stop,$strand,$id,$name) = @{$annotProduct};
 #	    print "$name\t$chrom\t$start\t$stop\n";
 	    $numAnnotProducts += 1;
-	    $overlapTotal += getOverlap_new($foldStart,$foldStop,$start,$stop);
+	    $overlapTotal += getOverlap($foldStart,$foldStop,$start,$stop);
 	    $prodLengthTotal += ($stop - $start + 1);
 	}
 
@@ -7687,6 +7687,7 @@ sub getMajorProductInfo {
     #this function obtains the interval for the major products within the fold of each hairpin
     my($hairpinsFile,$productFile) = @_;
     my %mpInfo;
+    my %miRProducts;
     my $products = readProductFile($productFile);
     open(HP, $hairpinsFile) or die "failed to open $hairpinsFile for reading\n";
     while (<HP>) {
@@ -7708,7 +7709,10 @@ sub getMajorProductInfo {
 	    my $miRCount = 0;
 	    foreach my $product (@{$products->{$name}}) {
 		my($prodName,$side,$type,$productCount,$maxProductCount,$adjProductCount,$adjMaxProductCount,$relProdStart,$relProdStop,$productStrand,$productSequence) = @{$product};
-		$miRCount += 1 if ($type =~ /miR/);		
+		if ($type eq /miR/) {
+		    $miRCount += 1;  #counts all miRs including antisense
+		}
+		push(@{$miRProducts{$name}},$product) if ($type eq "miR");
 		my($prodStart,$prodStop) = (-1,-2);  #initialized with dummy variables for testing
 		if ($strand eq '+') {
 		    $prodStart = $start + $relProdStart;
@@ -7719,7 +7723,7 @@ sub getMajorProductInfo {
 		}
 		if ($prodStart > $prodStop) {
 		    die "prodStart is greater than prodStop\n";
-		} 
+		}
 		if ($productCount > $majorProductCount && getOverlap($prodStart,$prodStop,$foldStart,$foldStop)) {
 		    #in the array below $miRCount is the total number of miRs in the hairpin that contains the major product
 		    #this is included since mirCount may be used to avoid filtering hairpins based on size later
@@ -7730,7 +7734,7 @@ sub getMajorProductInfo {
 	}
     }
     close(HP);
-    return \%mpInfo;
+    return(\%mpInfo,\%miRProducts);
 }
 
 sub getHairpinARPM {
@@ -7828,25 +7832,6 @@ sub extractGffReadRegions {
     }
     close(NDR);
     close(DR);    
-}
-
-sub overlapsPrediction {
-    my($hpScoreInfo,$usedScores,$overlapCutoff,$hairpinFoldRegions) = @_;
-    my $greatestOverlapAmt = 0;
-    my $greatestOverlappingHP = 0;
-    my($start1,$stop1,$hpScoreInfo1,$geneId1,$name1) = @{$hpScoreInfo};
-    my($foldStart1,$foldStop1) = @{$hairpinFoldRegions->{$name1}};
-    foreach my $scoreInfo (@{$usedScores}) {
-	my($start2,$stop2,$hpScoreInfo2,$geneId2,$name2) = @{$scoreInfo};
-	my($foldStart2,$foldStop2) = @{$hairpinFoldRegions->{$name2}};
-	my $overlapAmt = getOverlap($foldStart1,$foldStop1,$foldStart2,$foldStop2);
-	if ($overlapAmt > $overlapCutoff && $overlapAmt > $greatestOverlapAmt) {
-	    $greatestOverlapAmt = $overlapAmt;
-	    $greatestOverlappingHP = $name2;
-	}
-    }
-
-    return $greatestOverlappingHP;
 }
 
 sub classifyPredictions {
@@ -8000,6 +7985,7 @@ sub dropRepeatRegions {
 sub printPredictedMirGff {
     my($predHairpinClassFile,$productFile,$hairpinsFile,$repeatRegions,$parameters) = @_; 
     my $dropOverlaps = 1;
+    my $dropHairpinOverlaps = 1;
     my $minOverlapPercent = 0.7;
 #    my $matureAnnotations = (-e $parameters->{prodAnnotFile}) ? loadMatAnnotationsFile($parameters->{prodAnnotFile}) : {};
     print "in predicted mir gff\n";
@@ -8022,11 +8008,15 @@ sub printPredictedMirGff {
     }
     close(PHC);
     print "\n\nretrieving information about  major products:\n";
-    my $mpInfo = getMajorProductInfo($parameters->{hairpinsFile},$parameters->{productFile});
+    my($mpInfo,$miRProducts) = getMajorProductInfo($parameters->{hairpinsFile},$parameters->{productFile});
     my $annotations = annotatePredictions(\%predictions,$parameters);
-    #printing out gffs
+    #classifying predictions and dropping overlaping folds with the same major product
     my($posPredictions,$negPredictions,
        $sizeFilteredPred,$overlaps) = classifyPredictions(\%predictions,\%RFPredictions,$hpARPM,$dropOverlaps,$mpInfo,$parameters);
+    if ($dropHairpinOverlaps) {
+	#dropping hairpins which have overlapping miR products
+	($posPredictions,$overlaps) = dropOverlappingHairpins($posPredictions,$overlaps,$miRProducts,\%RFPredictions);
+    }
     if ($parameters->{postPredExcludeFile}) {
 	print "Dropping Positive Predictions in Repeat Regions\n";
 	$posPredictions = dropRepeatRegions($posPredictions,$repeatRegions,$annotations,$mpInfo);
@@ -8097,13 +8087,96 @@ sub printPredictedMirGff {
     }
 }
 
-sub getRelStartStop {
-    #converts gStart and gStop into a relative start and stop within a region bound by $location
-    my($location,$gStart,$gStop,$gStrand) = @_;
-    my($chrom,$start,$stop,$strand) = parseLocation($location);
-    my $relStart = ($strand eq "+") ? $gStart - $start : $stop - $gStop;
-    my $relStop = ($strand eq "+") ? $gStop - $start : $stop - $gStart;
-    return ($relStart,$relStop);
+sub overlapsPrediction {
+    my($hpScoreInfo,$usedScores,$overlapCutoff,$hairpinFoldRegions) = @_;
+    my $greatestOverlapAmt = 0;
+    my $greatestOverlappingHP = 0;
+    my($start1,$stop1,$hpScoreInfo1,$geneId1,$name1) = @{$hpScoreInfo};
+    my($foldStart1,$foldStop1) = @{$hairpinFoldRegions->{$name1}};
+    foreach my $scoreInfo (@{$usedScores}) {
+	my($start2,$stop2,$hpScoreInfo2,$geneId2,$name2) = @{$scoreInfo};
+	my($foldStart2,$foldStop2) = @{$hairpinFoldRegions->{$name2}};
+	my $overlapAmt = getOverlap($foldStart1,$foldStop1,$foldStart2,$foldStop2);
+	if ($overlapAmt > $overlapCutoff && $overlapAmt > $greatestOverlapAmt) {
+	    $greatestOverlapAmt = $overlapAmt;
+	    $greatestOverlappingHP = $name2;
+	}
+    }
+    return $greatestOverlappingHP;
+}
+
+sub determineMiROverlap {
+    my($hpScoreInfo,$usedScores,$overlapCutoff,$miRProducts) = @_;
+    my $greatestOverlapAmt = 0;
+    my $greatestOverlappingHP = 0;
+    my($start1,$stop1,$hpScoreInfo1,$geneId1,$name1) = @{$hpScoreInfo};
+    foreach my $productInfo1 (@{$miRProducts->{$name1}}) {
+	my($prodName1,$side1,$type1,$productCount1,$maxProductCount1,$adjProductCount1,$adjMaxProductCount1,
+	   $relProdStart1,$relProdStop1,$productStrand1,$productSequence1) = @{$productInfo1};
+	my($prodStart1,$prodStop1) = getProductGenomicStartStop($start1,$stop1,$relProdStart1,$relProdStop1,$productStrand1);
+	foreach my $scoreInfo (@{$usedScores}) {
+	    my($start2,$stop2,$hpScoreInfo2,$geneId2,$name2) = @{$scoreInfo};
+	    foreach my $productInfo2 (@{$miRProducts->{$name2}}) {
+		my($prodName2,$side2,$type2,$productCount2,$maxProductCount2,$adjProductCount2,$adjMaxProductCount2,
+		   $relProdStart2,$relProdStop2,$productStrand2,$productSequence2) = @{$productInfo2};
+		my($prodStart2,$prodStop2) = getProductGenomicStartStop($start2,$stop2,$relProdStart2,$relProdStop2,$productStrand2);
+		my $overlapAmt = getOverlap($prodStart1,$prodStop1,$prodStart2,$prodStop2);
+		if ($overlapAmt > $overlapCutoff && $overlapAmt > $greatestOverlapAmt && $productStrand1 eq $productStrand2) {
+		    $greatestOverlapAmt = $overlapAmt;
+		    $greatestOverlappingHP = $name2;
+		}
+	    }	
+	}
+    }
+    return $greatestOverlappingHP;
+}
+
+sub dropOverlappingHairpins {
+    my($posPredictions,$overlaps,$miRProducts,$RFPredictions) = @_;
+    my %newPosPredictions;
+    my $overlapCutoff = 1;  #require at least this many nucleotides to overlap before dropping
+    foreach my $chrom (keys %{$posPredictions}) {
+	my %hpScores;
+	#converting predictions hash to a hash keyed by strand so that we determine overlaps on the same strand
+	foreach my $predictionInfo (@{$posPredictions->{$chrom}}) {
+	    my($start,$stop,$strand,$geneId,$name) = @{$predictionInfo};
+	    push(@{$hpScores{$strand}}, [$start,$stop,$RFPredictions->{$name},$geneId,$name]);
+	}
+	#now that the scores are keyed by strand
+	#we are determining overlapping hairpins and seperating predictions into positives and negatives
+	foreach my $strand (keys %hpScores) {
+	    my @usedScores;
+	    my @sortedHPScores = sort {$b->[2] <=> $a->[2]} @{$hpScores{$strand}};
+	    foreach my $hpScoreInfo (@sortedHPScores) {
+		my($start,$stop,$hpScore,$geneId,$name) = @{$hpScoreInfo};
+		my $hairpinMiROverlap = determineMiROverlap($hpScoreInfo,\@usedScores,$overlapCutoff,$miRProducts);
+		if ($hairpinMiROverlap) {
+		    print "dropping $name because a miR it overlaps another miR on $hairpinMiROverlap\n";
+		    push(@{$overlaps->{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
+		} else {
+		    push(@{$newPosPredictions{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
+		}
+		push(@usedScores, [$start,$stop,$hpScore,$geneId,$name]);
+	    }
+	}
+    }
+    return(\%newPosPredictions,$overlaps);
+}
+
+sub getProductGenomicStartStop {
+    my($start,$stop,$relProdStart,$relProdStop,$strand) = @_;
+    my($prodStart,$prodStop) = (-1,-2);  #initialized with dummy variables for testing
+    if ($strand eq '+') {
+	$prodStart = $start + $relProdStart;
+	$prodStop = $start + $relProdStop;
+    } elsif ($strand eq '-') {
+	$prodStop = $stop - $relProdStart;
+	$prodStart = $stop - $relProdStop;
+    }
+    if ($prodStart > $prodStop) {
+	die "prodStart is greater than prodStop\n";
+    }
+    return($prodStart,$prodStop);
 }
 
 sub getGlobalStartStop {
@@ -8122,6 +8195,16 @@ sub getGlobalStartStop {
     } 
     return($gStart,$gStop);
 }
+
+sub getRelStartStop {
+    #converts gStart and gStop into a relative start and stop within a region bound by $location
+    my($location,$gStart,$gStop,$gStrand) = @_;
+    my($chrom,$start,$stop,$strand) = parseLocation($location);
+    my $relStart = ($strand eq "+") ? $gStart - $start : $stop - $gStop;
+    my $relStop = ($strand eq "+") ? $gStop - $start : $stop - $gStart;
+    return ($relStart,$relStop);
+}
+
 
 sub getBestAnnot {
     my($precAnnotFile) = @_;
