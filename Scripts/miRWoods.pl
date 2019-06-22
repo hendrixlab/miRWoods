@@ -42,6 +42,7 @@ unless ($parameters->{LoadFromConfigFile} eq "") {
 miRWoods::createOutputFileParameters($parameters);
 
 my $scriptDir = $parameters->{scriptDir} ? $parameters->{scriptDir} : "";
+my $checkMiRBaseGff = $scriptDir . "/checkMiRBaseGff.pl";
 my $getLibrarySizes = $scriptDir . "/countMappedReads.pl";
 my $printReadRegions = $scriptDir . "/printReadRegions.pl";
 my $extractProductFeatures = $scriptDir . "/extractProductFeatures.pl";
@@ -52,7 +53,9 @@ my $generateAnnotations = $scriptDir . "/generateAnnotations.pl";
 my $extractHairpinFeatures = $scriptDir . "/extractHairpinFeatures.pl";
 my $generateHairpinTrainData = $scriptDir . "/generateHairpinTrainData.pl";
 my $evaluateHairpinsWithRF = $scriptDir . "/evaluateHairpinsWithRF.pl";
+my $printMiRWoodsPredictions = $scriptDir . "/printMiRWoodsPredictions.pl";
 
+die "error: $checkMiRBaseGff not found\n" unless (-e $checkMiRBaseGff);
 die "error: $getLibrarySizes not found\n" unless (-e $getLibrarySizes);
 die "error: $printReadRegions not found\n" unless (-e $printReadRegions);
 die "error: $extractProductFeatures not found\n" unless (-e $extractProductFeatures);
@@ -63,7 +66,11 @@ die "error: $generateAnnotations not found\n" unless (-e $generateAnnotations);
 die "error: $extractHairpinFeatures not found\n" unless (-e $extractHairpinFeatures);
 die "error: $generateHairpinTrainData not found\n" unless (-e $generateHairpinTrainData);
 die "error: $evaluateHairpinsWithRF not found\n" unless (-e $evaluateHairpinsWithRF);
+die "error: $printMiRWoodsPredictions not found\n" unless (-e $printMiRWoodsPredictions);
 
+print "Checking the miRBase Gff File:\n";
+runCheckMiRBaseGff($checkMiRBaseGff,$parameters);
+print "finished checking miRBaseGffFile\n";
 unless (-e $parameters->{librarySizes}) {
     print "warning: library sizes file not found\n";
     print "creating " . $parameters->{librarySizes} . "\n\n";
@@ -102,7 +109,19 @@ if ($parameters->{trainModels}) {
 print "running $evaluateHairpinsWithRF\n";
 runEvaluateHairpinsWithRF($evaluateHairpinsWithRF,$parameters);
 print "$evaluateHairpinsWithRF finished\n\n";
-print "done.";
+print "printing output files\n";
+runPrintMiRWoodsPredictions($printMiRWoodsPredictions,$parameters);
+print "output files printed\n\n";
+print "predictions are found in: predictedMiRs.gff\n";
+print "product info is found in: predictedMiRs_productInfo.txt\n";
+print "done.\n\n";
+
+sub runCheckMiRBaseGff {
+    my($checkMiRBaseGff,$parameters) = @_;
+    my $configFile = $parameters->{LoadFromConfigFile} or die "error: LoadFromConfigFile parameter not set";
+    my $miRBaseGff = $parameters->{mirbaseGff} or die "error: mirbaseGff parameter not set";
+    system("$checkMiRBaseGff $configFile");
+}
 
 sub runGetLibrarySizes {
     my($getLibrarySizes,$parameters) = @_;
@@ -256,4 +275,12 @@ sub runEvaluateHairpinsWithRF {
 	die "$hairpinTrainFile not found.\n" unless (-e $hairpinTrainFile);
     }
     system("$evaluateHairpinsWithRF -L $configFile");
+}
+
+sub runPrintMiRWoodsPredictions {
+    my($printMiRWoodsPredictions,$parameters) = @_;
+    die "could not find positivePredictions.gff" unless (-e "positivePredictions.gff");
+    die "could not find positivePredictions_hairpins.txt" unless (-e "positivePredictions_hairpins.txt");
+    die "could not find positivePredictions_products.txt" unless (-e "positivePredictions_products.txt");
+    system("$printMiRWoodsPredictions positivePredictions.gff positivePredictions_hairpins.txt positivePredictions_products.txt");
 }

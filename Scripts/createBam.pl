@@ -7,6 +7,13 @@ $| = 1;
 
 my $USAGE = "USAGE:\n$0 <fastq> <adapter> <min quality> <bowtie index>\n";
 
+my $scriptDir = 0;
+
+my $fastqAvgQualityFilter = ($scriptDir) ? $scriptDir . "/fastqAvgQualityFilter.pl" : "fastqAvgQualityFilter.pl";
+my $trimMirReads = ($scriptDir) ? $scriptDir . "/trimMirReads.pl" : "trimMirReads.pl";
+my $addNHTags = ($scriptDir) ? $scriptDir . "/addNHTags.pl" : "addNHTags.pl";
+
+
 #cutadapt parameters
 my $caError = 0.2; #the allowable error rate for cutadapt
 my $caQuality = 10;  #trim on 3' end until quality equals $caQuality
@@ -37,7 +44,7 @@ open(CA,">$caOutputFile") or die "failed to open $caOutputFile for writing\n";
 print CA $caOutput;
 close(CA);
 
-my $out = `perl ~/Scripts/miRWoods/fastqAvgQualityFilter.pl $caFastq $qualFiltFastq $avgQual`;
+my $out = `$fastqAvgQualityFilter $caFastq $qualFiltFastq $avgQual`;
 print $out;
 $out = `rm $caFastq`;
 print $out;
@@ -48,14 +55,14 @@ my $bowtieOutput = $outputBase . "_bowtieOutput.out";
 $out = `bowtie -n $mismatchInSeed -e $minErrorOutsideSeed -l $seedLength -a -m $maxNumMatches -S --best --strata $bowtieIndex $qualFiltFastq $samFile >& $bowtieOutput`;
 #$out = `bowtie -n $mismatchInSeed -e $minErrorOutsideSeed -l $seedLength -a -m $maxNumMatches -S $bowtieIndex $qualFiltFastq $samFile >& $bowtieOutput`;
 print $out;
-$out = `perl ~/Scripts/trimMirReads.pl $samFile $trimmedSamFile`;
+$out = `$trimMirReads $samFile $trimmedSamFile`;
 print $out;
 $out = `mv $trimmedSamFile $samFile`;
 print $out;
 
 my $NHSamFile = $outputBase . "_tempAddNHTags.sam";
 my $NHTagOut = $outputBase . "_addNHTags.out\n";
-$out = `perl ~/Scripts/miRWoods/addNHTags.pl $samFile $NHSamFile >& $NHTagOut`;
+$out = `$addNHTags $samFile $NHSamFile >& $NHTagOut`;
 print $out;
 $out = `mv $NHSamFile $samFile`;
 print $out;

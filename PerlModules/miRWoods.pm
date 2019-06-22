@@ -3,7 +3,6 @@ use Bio::DB::Sam;
 use Memory::Usage;
 use Statistics::R;
 use Storable;
-#use TimeKeeper;
 use RNA;
 use strict;
 use warnings;
@@ -6564,8 +6563,8 @@ sub annotatePredictions {
     my $minHPCoverageSingle = $parameters->{aliasMinHPCoverageSingle};
     my $minPrecCoverageSingle = $parameters->{aliasMinPrecCoverageSingle};
     my $minMatCoverageSingle = $parameters->{aliasMinMatCoverageSingle};
-    print "minHPCoverage = $minHPCoverage\tminPrecCoverage = $minPrecCoverage\tminMatCoverage = $minMatCoverage\n";
-    print "minHPCoverageSinge = $minHPCoverageSingle\tminPrecCoverageSingle = $minPrecCoverageSingle\tminMatCoverageSingle = $minMatCoverageSingle\n";
+    #print "minHPCoverage = $minHPCoverage\tminPrecCoverage = $minPrecCoverage\tminMatCoverage = $minMatCoverage\n";
+    #print "minHPCoverageSinge = $minHPCoverageSingle\tminPrecCoverageSingle = $minPrecCoverageSingle\tminMatCoverageSingle = $minMatCoverageSingle\n";
     my $precursorAnnotations = (-e $parameters->{hpAnnotFile}) ? loadPrecursorAnnotationsFile($parameters->{hpAnnotFile}) : {};
     my $otherAnnotations = (-e $parameters->{otherAnnotFile}) ? loadOtherAnnotationsFile($parameters->{otherAnnotFile}) : {};
     my %annotations;
@@ -7844,12 +7843,12 @@ sub classifyPredictions {
     my $minMajProdCount = $parameters->{minMajProdCount};
     my $minAdjMajProdCount = $parameters->{minAdjMajProdCount};
     my $noAbundCheckMiRCutoff = $parameters->{noAbundCheckMiRCutoff};
-    print "minARPM = $minARPM\n";
-    print "letThrough = $letThrough\n";
-    print "RFCutoff = $RFCutoff\n";
-    print "minMajProdCount = $minMajProdCount\n";
-    print "minAdjMajProdCount = $minAdjMajProdCount\n";
-    print "noAbundCheckMiRCutoff = $noAbundCheckMiRCutoff\n";
+    #print "minARPM = $minARPM\n";
+    #print "letThrough = $letThrough\n";
+    #print "RFCutoff = $RFCutoff\n";
+    #print "minMajProdCount = $minMajProdCount\n";
+    #print "minAdjMajProdCount = $minAdjMajProdCount\n";
+    #print "noAbundCheckMiRCutoff = $noAbundCheckMiRCutoff\n";
     my %positivePredictions;
     my %negativePredictions;
     my %sizeFilteredPredictions;
@@ -7877,11 +7876,11 @@ sub classifyPredictions {
 		} elsif ((($mpProductCount < $minMajProdCount) || ($mpAdjProductCount < $minAdjMajProdCount)) 
 			 && ($mirCount < $noAbundCheckMiRCutoff)) {
 		    push(@{$sizeFilteredPredictions{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
-		    print "$name filtered by major product size \(mpProductCount = $mpProductCount mpAdjProdCount = $mpAdjProductCount mirCount = $mirCount\)\n";
+		    #print "$name filtered by major product size \(mpProductCount = $mpProductCount mpAdjProdCount = $mpAdjProductCount mirCount = $mirCount\)\n";
 		} elsif (($ARPM < $minARPM) && ($hpScore < $letThrough)) {
 #		    push(@{$sizeFilteredPredictions{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
 		    push(@{$negativePredictions{$chrom}}, [$start,$stop,$strand,$geneId,$name]);		
-		    print "$name filtered by hairpin size \(ARPM = " .$ARPM. "score = ".$hpScore."\n";
+		    #print "$name filtered by hairpin size \(ARPM = " .$ARPM. "score = ".$hpScore."\n";
 		} elsif ($hpScore >= $RFCutoff) {
 		    push(@{$positivePredictions{$chrom}}, [$start,$stop,$strand,$geneId,$name]);
 		} else {
@@ -8007,7 +8006,7 @@ sub printPredictedMirGff {
 	$RFPredictions{$name} = $RFavg;
     }
     close(PHC);
-    print "\n\nretrieving information about  major products:\n";
+    #print "\n\nretrieving information about  major products:\n";
     my($mpInfo,$miRProducts) = getMajorProductInfo($parameters->{hairpinsFile},$parameters->{productFile});
     my $annotations = annotatePredictions(\%predictions,$parameters);
     #classifying predictions and dropping overlaping folds with the same major product
@@ -8620,57 +8619,29 @@ __END__
 
 =head1 NAME
 
-miRTRAP (miR Tests for Read Analysis and Prediction) - Perl module (and script) for discovering microRNAs from highthroughput sequencing data.
+miRWoods - Perl module (and script) for sensitive detection of microRNAs using Stacked Random Forests
 
 =head1 SYNOPSIS
 
-#the following code is the contents of the associated "printReadRegions.pl" script.
-use miRTRAP;
-my $usage = "Usage:\n\n$0 <configFile>\n";
-
-my $parameters = {
-    "maxLength" => 160,
-    "maxCount" => 5,       
-    "maxHitCount" => 50,
-    "filePrefix" => "readRegions",
-    "readListFile" => "",
-    "repeatRegionsFile" => ""   
-};
-
-my $configFile = $ARGV[0] or die $usage;
-miRTRAP::readConfigFile($configFile,$parameters);
-my $readGffListFile = $parameters->{readListFile} or die "FAIL: readListFile not loaded in configFile.\n";
-my $repeatRegionsFile = $parameters->{repeatRegionsList};
-my($dataSet,$sampleTotal,$sampleList,$hitCount) = miRTRAP::loadReadGffList($readGffListFile,$parameters);
-my $repeatRegions = {};
-if($repeatRegionsFile) {
-    $repeatRegions = miRTRAP::readRepeatRegions($repeatRegionsFile);
-}
-miRTRAP::processOverlaps($dataSet,$repeatRegions,$hitCount,$parameters);
+miRWoods is a software using a stacked random forest strategy for the sensitive detection microRNAs, including those with only one read.
 
 =head1 DESCRIPTION
 
-MicroRNAs (miRs) have been broadly implicated in animal development and disease. However, the systematic, whole-genome identification of miRs is complicated by their small size.  Current identification methods rely mainly on the projected stability of putative stem-loop structures (pre-miRs) and on sequence comparisons with known miRs. 
-
-This method, miRTRAP, incorporates the mechanisms of miR biogenesis, and includes additional criteria regarding the prevalence and quality of small RNAs arising from the antisense strand and neighboring loci.
-
-Please see associate scripts and README file for more information and examples.
-
-=head2 EXPORT
-
-None by default.
+miRWoods uses a stacked random forest strategy to detect microRNAs.  While most softwares will place limits on the minimum number of reads within potential miR loci, miRWoods does not.  miRWoods uses two random forests as part of it's strategy.  The first random forest referred to as the miR Product Random Forsest (MPRF) assembles read stacks into products and scores them.  Products which don't pass through the MRPF are filtered out, and those which do are combined with surrounding products and folded to produce hairpins.  Each hairpin is scored and then passed through a Hairpin Precursor Random Forest (HPRF) to obtain the final results.  miRWoods will evaluate several possible overlapping precursors for each loci, and pick the one with the best score.
 
 =head1 SEE ALSO
 
-http://flybuzz.berkeley.edu/miRTRAP.html
+http://hendrixlab.cgrb.oregonstate.edu/
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-David Hendrix, davidhendrix@berkeley.edu
+Jimmy Bell, bellji@oregonstate.edu
+
+Dr. David Hendrix, david.hendrix@oregonstate.edu 
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010 by David Hendrix
+Copyright (C) 2019 by Jimmy Bell
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,
@@ -8678,5 +8649,3 @@ at your option, any later version of Perl 5 you may have available.
 
 =cut
 
-#  LocalWords:  printProductTrainData returnLargestProductOverlap
-#  LocalWords:  posOverlapProducts
