@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 use strict;
-use miRTRAP1_6;
 use Math::CDF;
 $| = 1;
 
@@ -11,7 +10,6 @@ my $samFile = $ARGV[0] or die $USAGE;
 my $outputSamFile = $ARGV[1] or die $USAGE;
 
 createTrimmedSamFile($samFile,$outputSamFile,$MAXPVAL);
-
 
 sub createTrimmedSamFile {
     my($samFile,$outputSamFile,$maxPValue) = @_;
@@ -25,7 +23,7 @@ sub createTrimmedSamFile {
 	} else {
 	    my($id,$flags,$chrom,$pos,$mapQ,$extendedCigar,$MRNM,$mPos,$iSite,$seq,$qualityScores,@tags) = split("\t", $samLine);
 	    if (isMapped($flags)) {
-		my $cigar = miRTRAP1_6::getTagValue(\@tags,'MD','Z') or die "no cigar tag found";
+		my $cigar = getTagValue(\@tags,'MD','Z') or die "no cigar tag found";
 		my $cigarArray = breakCigar($cigar);
 		my $strand = getStrand($flags);
 		my ($trimmedSeq,$trimmedQualityScores);
@@ -71,6 +69,19 @@ sub makeSamLine {
     return $samLine;
 }
 
+sub getTagValue {
+    my $tags = shift;
+    my $tagName = shift;
+    my $tagType = shift;
+    foreach my $tag (@{$tags}) {
+	my($tagValue) = $tag =~ /^$tagName:$tagType:(.*)/;
+	if ($tagValue) {
+	    return $tagValue;
+	}
+    }
+    return 0;
+}
+
 ####################################################
 #  Cigar Functions                                 #
 ####################################################
@@ -92,7 +103,6 @@ sub breakCigar {
 	    die "gaps were unexpected in bam file"  if ($mismatch eq "^");
 	}
     }
-
     return(\@cigarArray);
 }
 
