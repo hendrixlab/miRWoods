@@ -17,15 +17,19 @@ miRWoods is a software for the
 miRWoods Requires the Vienna RNA fold package and Perl Library which may be downloaded here:
 https://www.tbi.univie.ac.at/RNA/
 
+Cutadapt is used for adapter trimming and may be downloaded using the following command:
+`pip3 install --user --upgrade cutadapt`
+
 Bowtie is used for read mapping and may be downloaded here:
 http://bowtie-bio.sourceforge.net/index.shtml
 
-Samtools is needed to handle sam and bam files and may be downloaded here:
-http://www.htslib.org/
+Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:
+http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2
 
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
 - Statistics::R
+- Math::CDF
 - Memory::Usage
 
 miRWoods also uses some R code which may be downloaded here:
