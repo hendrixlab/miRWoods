@@ -29,6 +29,7 @@ http://www.htslib.org/
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
 - Statistics::R
+- Math::CDF
 - Memory::Usage
 
 miRWoods also uses some R code which may be downloaded here:
