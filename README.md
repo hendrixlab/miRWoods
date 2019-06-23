@@ -17,6 +17,9 @@ miRWoods is a software for the
 miRWoods Requires the Vienna RNA fold package and Perl Library which may be downloaded here:
 https://www.tbi.univie.ac.at/RNA/
 
+Cutadapt is used for adapter trimming and may be downloaded using the following command:
+`pip3 install --user --upgrade cutadapt`
+
 Bowtie is used for read mapping and may be downloaded here:
 http://bowtie-bio.sourceforge.net/index.shtml
 
