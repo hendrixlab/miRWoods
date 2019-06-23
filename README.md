@@ -26,6 +26,8 @@ http://bowtie-bio.sourceforge.net/index.shtml
 Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:
 http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2
 
+when installing samtools edit the Makefile so that CFLAGS= '-g -Wall -O2 -fPIC #-m64 #-arch ppc'
+
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
 - Statistics::R
