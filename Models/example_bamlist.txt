@@ -1,5 +1,0 @@
-hsa_cellLines1	/<path>/hsa_cellLines1.bam
-hsa_cellLines2	/<path>/hsa_cellLines2.bam
-hsa_cellLines3	/<path>/hsa_cellLines3.bam
-hsa_cellLines4	/<path>/hsa_cellLines4.bam
-hsa_cellLines5	/<path>/hsa_cellLines5.bam
