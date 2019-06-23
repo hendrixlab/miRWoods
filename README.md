@@ -17,6 +17,12 @@ miRWoods is a software for the
 miRWoods Requires the Vienna RNA fold package and Perl Library which may be downloaded here:
 https://www.tbi.univie.ac.at/RNA/
 
+Bowtie is used for read mapping and may be downloaded here:
+http://bowtie-bio.sourceforge.net/index.shtml
+
+Samtools is needed to handle sam and bam files and may be downloaded here:
+http://www.htslib.org/
+
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
 - Statistics::R
