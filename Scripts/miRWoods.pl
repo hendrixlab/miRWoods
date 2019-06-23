@@ -1,9 +1,10 @@
 #!/usr/bin/perl -w
-use Memory::Usage;
 use miRWoods;
 use Bio::DB::Sam;
 use Getopt::Long;
 use Statistics::R;
+use RNA;
+use List::Util;
 use strict;
 $| = 1;
 

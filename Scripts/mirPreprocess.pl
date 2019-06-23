@@ -1,5 +1,4 @@
 #!/usr/bin/perl -w
-use Memory::Usage;
 use miRWoods;
 use Bio::DB::Sam;
 use Getopt::Long;

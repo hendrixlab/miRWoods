@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 use miRWoods;
 use Bio::DB::Sam;
-use Memory::Usage;
 use strict;
 $| = 1;
 

@@ -126,7 +126,7 @@ sub checkMirbaseGff3 {
 			}
 			$info = join(";",@terms);
 		    } else {
-			die "Error: last hairpin id in gff was $lastHPId and this product derives from $parentId.\n";
+			print "Warning: last hairpin id in gff was $lastHPId and this product derives from $parentId.\n";
 		    }
 		}
 		my $line = join("\t",($chrom,$source,$type,$start,$stop,$score,$strand,$phase,$info));

@@ -1,13 +1,13 @@
 package miRWoods;
 use Bio::DB::Sam;
-use Memory::Usage;
+#use Memory::Usage;
 use Statistics::R;
 use Storable;
 use RNA;
 use strict;
 use warnings;
-use threads;
-use threads::shared;
+#use threads;
+#use threads::shared;
 use List::Util;
 
 
@@ -1900,28 +1900,28 @@ sub breakupReadRegionsFile {
 }
 
 #note: the following function causes a segfault
-sub processReadRegionsMultiThreaded {
-    my($bamList,$readRegionsFile,$genomeDir,$chromLengths,$parameters) = @_;
-    my $numThreads = $parameters->{numThreads};
-    my $readRegionsFiles = breakupReadRegionsFile($readRegionsFile,$numThreads);
-    my @threads;
-    #creating threads
-    for (my $i = 0; $i < $numThreads; $i++) {
-	my $threadReadRegionsFile = $readRegionsFiles->{$i};
-	my($threadRRFileBase) = $threadReadRegionsFile =~ /([^\/]*)\.txt/;
-	my $newParams = {"outputPrefix" => "$threadRRFileBase"};
-	my $thr = threads->create('processReadRegionsWithNewParams',$bamList,$threadReadRegionsFile,$genomeDir,$chromLengths,$parameters,$newParams);
-	push(@threads,$thr);
-    }
-    #joining threads
-    my @running = threads->list(threads::running);
-    while (@running != 0) {
-	foreach my $thr (@threads) {
-	   $thr->join if ($thr->is_joinable()); 
-	}
-	@running = threads->list(threads::running);
-    }
-}
+#sub processReadRegionsMultiThreaded {
+#    my($bamList,$readRegionsFile,$genomeDir,$chromLengths,$parameters) = @_;
+#    my $numThreads = $parameters->{numThreads};
+#    my $readRegionsFiles = breakupReadRegionsFile($readRegionsFile,$numThreads);
+#    my @threads;
+#    #creating threads
+#    for (my $i = 0; $i < $numThreads; $i++) {
+#	my $threadReadRegionsFile = $readRegionsFiles->{$i};
+#	my($threadRRFileBase) = $threadReadRegionsFile =~ /([^\/]*)\.txt/;
+#	my $newParams = {"outputPrefix" => "$threadRRFileBase"};
+#	my $thr = threads->create('processReadRegionsWithNewParams',$bamList,$threadReadRegionsFile,$genomeDir,$chromLengths,$parameters,$newParams);
+#	push(@threads,$thr);
+#    }
+#    #joining threads
+#    my @running = threads->list(threads::running);
+#    while (@running != 0) {
+#	foreach my $thr (@threads) {
+#	   $thr->join if ($thr->is_joinable()); 
+#	}
+#	@running = threads->list(threads::running);
+#    }
+#}
 
 sub processReadRegionsMultiProcess {
     my($bamList,$readRegionsFile,$genomeDir,$chromLengths,$parameters) = @_;
@@ -2413,7 +2413,7 @@ sub processReadRegions {
     my $centersReadsCount = 0; #number of centers on mirBase hairpins with reads
     my $noCenterCount = 0;  #number of hairpins without centers (hopefully this will stay 0)
     my $noMiRCount = 0;  #number of hairpins without any miR's being labeled
-    my $mu = Memory::Usage->new() if ($testMemory);
+    #my $mu = Memory::Usage->new() if ($testMemory);
     my @sampleList;
     my $minLength = $parameters->{lengthMin} or die "minLength: not loaded.\n";
     my $filteredCandidatesFile = $parameters->{filteredCandidatesFile};
@@ -2689,7 +2689,7 @@ sub processReadRegions {
 	    }
 	}
     }
-    $mu->record("after finishing") if ($testMemory);
+    #$mu->record("after finishing") if ($testMemory);
     print "hairpins with reads = $readsCount\n" if ($testReadCounts);
     print "hairpins without reads = $noReadsCount\n" if ($testReadCounts);
     print "hairpin centers = $centersReadsCount\n" if ($testReadCounts);
@@ -2701,7 +2701,7 @@ sub processReadRegions {
     close(HPL);
     close(HDR);
     close(HL);
-    $mu->dump() if ($testMemory);
+    #$mu->dump() if ($testMemory);
 }
 
 sub processReadRegions_old {
@@ -2714,7 +2714,7 @@ sub processReadRegions_old {
     my $readsLessThanCountMinLocus = 0; #number of hairpins with fewer than count min locus reads
     my $centersReadsCount = 0; #number of centers on mirBase hairpins with reads
     my $noCenterCount = 0;  #number of hairpins without centers (hopefully this will stay 0)
-    my $mu = Memory::Usage->new() if ($testMemory);
+    #my $mu = Memory::Usage->new() if ($testMemory);
     my @sampleList;
     my $minLength = $parameters->{lengthMin} or die "minLength: not loaded.\n";
     my $filteredCandidatesFile = $parameters->{filteredCandidatesFile};
@@ -2961,7 +2961,7 @@ sub processReadRegions_old {
 	    }
 	}
     }
-    $mu->record("after finishing") if ($testMemory);
+    #$mu->record("after finishing") if ($testMemory);
 
     print "hairpins with reads = $readsCount\n" if ($testReadCounts);
     print "hairpins without reads = $noReadsCount\n" if ($testReadCounts);
@@ -2975,7 +2975,7 @@ sub processReadRegions_old {
     close(HL);
     close(HPA);
     close(PA);
-    $mu->dump() if ($testMemory);
+    #$mu->dump() if ($testMemory);
 }
 
 sub mirPreprocess {
