@@ -23,8 +23,8 @@ Cutadapt is used for adapter trimming and may be downloaded using the following 
 Bowtie is used for read mapping and may be downloaded here:
 http://bowtie-bio.sourceforge.net/index.shtml
 
-Samtools is needed to handle sam and bam files and may be downloaded here:
-http://www.htslib.org/
+Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:
+http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2
 
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
