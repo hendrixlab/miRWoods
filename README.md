@@ -48,7 +48,8 @@ R will require the following libraries which can be downloaded using CRAN:
 The software takes it's inputs in the form of bam files.  These may be created from fastq files using the following command:  
 `createBam.pl < fastq file > < 3' adaptor > < min avg quality score > < bowtie index >`
 
-Here < min avg quality score > is set to the average quality score requred for a read to be kept.  We set < min avg quality score > to 30 for our experiments but depending on the fastq file you may need to set this differently.
+Here < min avg quality score > is set to the average quality score requred for a read to be kept.  
+We set < min avg quality score > to 30 for our experiments.  
 
 After creating each of the bam files you should place them into a tab delimited bam file list (see example_bamlist.txt for an example.)
 
