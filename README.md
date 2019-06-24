@@ -12,16 +12,16 @@ miRWoods is a software designed for the
     
 # Dependencies
 
-miRWoods Requires the Vienna RNA fold package and Perl Library which may be downloaded here:
+miRWoods Requires the Vienna RNA fold package and Perl Library which may be downloaded here:  
 https://www.tbi.univie.ac.at/RNA/
 
-Cutadapt is used for adapter trimming and may be downloaded using the following command:
+Cutadapt is used for adapter trimming and may be downloaded using the following command:  
 `pip3 install --user --upgrade cutadapt`
 
-Bowtie is used for read mapping and may be downloaded here:
+Bowtie is used for read mapping and may be downloaded here:  
 http://bowtie-bio.sourceforge.net/index.shtml
 
-Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:
+Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:  
 http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2
 
 When installing samtools edit the Makefile so that CFLAGS= '-g -Wall -O2 -fPIC #-m64 #-arch ppc'
@@ -31,7 +31,7 @@ The following libraries are also needed and can be downloaded from CPAN:
 - Statistics::R
 - Math::CDF
 
-miRWoods also uses some R code which may be downloaded here:
+miRWoods also uses some R code which may be downloaded here:  
 https://www.r-project.org/  
 
 R will require the following libraries which may be downloaded from CRAN:
@@ -46,10 +46,8 @@ R will require the following libraries which may be downloaded from CRAN:
 
 # Preparing Bam Files To Be Used By miRWoods
 
-The software takes it's inputs in the form of bam files.  These may be created from fastq files using the following command:
+The software takes it's inputs in the form of bam files.  These may be created from fastq files using the following command:  
 `createBam.pl < fastq file > < 3' adaptor > < min avg quality score > < bowtie index >`
-
-example: `createBam.pl SRR326279.fastq ATCTCGTATGCCGTCTTCTGCTTGT 30 hg19`
 
 Here < min avg quality score > is set to the average quality score requred for a read to be kept.  We set < min avg quality score > to 30 for our experiments but depending on the fastq file you may need to set this differently.
 
