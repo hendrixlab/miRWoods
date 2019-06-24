@@ -51,11 +51,11 @@ The software takes it's inputs in the form of bam files.  These may be created f
 Here < min avg quality score > is set to the average quality score requred for a read to be kept.  
 We set < min avg quality score > to 30 for our experiments.  
 
-After creating each of the bam files you should place them into a tab delimited bam file list (see example_bamlist.txt for an example.)
+After creating each of the bam files you should place them into a tab delimited bam file list (see **example_bamlist.txt** for an example.)
 
 # Running miRWoods
 
-The easiest way to pass inputs to miRWoods is through a config file (see example_config.txt)  The config file includes the following information:  
+The easiest way to pass inputs to miRWoods is through a config file (see **example_config.txt**)  The config file includes the following information:  
 - scriptDir - the location of the miRWoods/Scripts directory
 - hairpinRF - the location of the HPRF model file
 - productRF - the location of the MPRF model file
@@ -75,5 +75,5 @@ After the config file is setup, miRWoods may be run with the following command:
 # Outputs
 
 The following two files are output by miRWoods:  
-- predictedMiRs.gff - a gff file containing the hairpins and products predicted by miRWoods
-- predictedMiRs_productInfo.txt - a tab delimited file containing read count information for each product. 
+- **predictedMiRs.gff** - a gff file containing the hairpins and products predicted by miRWoods
+- **predictedMiRs_productInfo.txt** - a tab delimited file containing read count information for each product. 
