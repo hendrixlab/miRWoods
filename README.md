@@ -1,6 +1,6 @@
 # miRWoods
 
-miRWoods is a software for the
+miRWoods is a software designed for the
     sensitive detection microRNAs, including those with only one read.
     miRWoods uses two random forests. The 
     first random forest referred to as the miR Product Random Forsest (MPRF) 
@@ -8,9 +8,7 @@ miRWoods is a software for the
     don't pass through the MRPF are filtered out, and those which do are 
     combined with surrounding products and folded to produce hairpins. 
     Each hairpin is scored and then passed through a Hairpin Precursor 
-    Random Forest (HPRF) to obtain the final results. miRWoods
-    evaluates several possible overlapping precursors for each loci, and pick
-    the one with the best score.
+    Random Forest (HPRF) to obtain the final results. 
     
 # Dependencies
 
@@ -26,7 +24,7 @@ http://bowtie-bio.sourceforge.net/index.shtml
 Samtools is needed to handle sam and bam files.  However, Bio::DB::Sam requires an earlier version.  This version may be downloaded here:
 http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2
 
-when installing samtools edit the Makefile so that CFLAGS= '-g -Wall -O2 -fPIC #-m64 #-arch ppc'
+When installing samtools edit the Makefile so that CFLAGS= '-g -Wall -O2 -fPIC #-m64 #-arch ppc'
 
 The following libraries are also needed and can be downloaded from CPAN:
 - Bio::DB::Sam
