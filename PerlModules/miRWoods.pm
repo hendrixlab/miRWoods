@@ -771,13 +771,19 @@ sub readConfigFile {
     my($configFile,$parameters) = @_;
     open(CONFIGFILE,$configFile) or die "FAIL: could not open $configFile\n";
     while(<CONFIGFILE>) {
+	$_ =~ s/^\s+//;
 	chomp;
-	my($key,$value) = split(/\s+=\s+/);
-	$parameters->{$key} = $value;
+	unless ( $_ eq "" ) {
+	    my(@lineData) = split(/\s+/);
+	    unless ( @lineData == 3 && $lineData[1] eq "=") {
+		die "Error: could not read following line:\n$_\n\nConfig file should be of the form:\nParameter\t=\tValue\n";
+	    }
+	    my($key,$eqsign,$value) = @lineData;
+	    $parameters->{$key} = $value;
+	}
     }
     return $parameters;
 }
-
 
 ######################################
 # SEQUENCE / GENOME TOOLS            #
@@ -1371,13 +1377,20 @@ sub loadBamList {
     open(BLF,$bamListFile) or die "could not open $bamListFile\n";
     my @bamList;
     while(<BLF>) {
+	$_ =~ s/^\s+//;
 	chomp;
-	my($label,$bamFile) = split;
-	my $bam = loadBamFile($bamFile);
-	my $bamHeader = $bam->header;
-	my $bamIndex = loadBamIndex($bamFile);
-	my $totalMapped = getBamTotal($bamFile);
-	push(@bamList,[$bam,$bamHeader,$bamIndex,$bamFile,$label,$totalMapped]);
+	unless ( $_ eq "" ) {
+	    my(@lineData) = split(/\s+/);
+	    unless ( @lineData == 2 ) {
+		die "Error: could not read following line:\n$_\n\nBam file should be of the form:\nSample\tBamFile.bam\n";
+	    }
+	    my($label,$bamFile) = @lineData;
+	    my $bam = loadBamFile($bamFile);
+	    my $bamHeader = $bam->header;
+	    my $bamIndex = loadBamIndex($bamFile);
+	    my $totalMapped = getBamTotal($bamFile);
+	    push(@bamList,[$bam,$bamHeader,$bamIndex,$bamFile,$label,$totalMapped]);
+	}
     }
     return \@bamList;
 }

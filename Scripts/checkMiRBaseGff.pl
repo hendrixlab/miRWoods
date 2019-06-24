@@ -6,7 +6,7 @@ my $usage = "USAGE:\n$0 <miRWoods config file>";
 
 my $configFile = $ARGV[0] or die $usage;
 
-my($params,$paramArray) = readConfig($configFile);
+my($params,$paramArray) = miRWoods::readConfigFile($configFile);
 my $miRBaseGff = $params->{mirbaseGff};
 
 my($gffLines,$createNewFile,$changes) = checkMirbaseGff3($miRBaseGff);
@@ -64,23 +64,6 @@ sub createNewConfigFile {
     }
     close(OCF);
     close(NCF);
-}
-
-sub readConfig {
-    my($configFile) = @_;
-    my @paramArray;
-    my %params;
-    open(CF,$configFile) or die "failed to open $configFile\n";
-    while (<CF>) {
-	chomp;
-	unless ($_ eq "" || ($_ =~ /^\#/) ) {
-	    my($param,$value) = $_ =~ /^(.*)\s+=\s+(.*)\s*$/;
-	    push(@paramArray,$param);
-	    $params{$param} = $value;
-	}
-    }
-    close(CF);
-    return(\%params,\@paramArray);
 }
 
 sub checkMirbaseGff3 {
